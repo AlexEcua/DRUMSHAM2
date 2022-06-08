@@ -32,5 +32,9 @@ private:
     juce::ComboBox styleMenu{ "Select Genre" };
     juce::ComboBox pattern{ "Choose Pattern" };
 
+
+    juce::TextButton stopButton{ "Stop" };
+    juce::Slider gainSlider;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DRUMSHAM_2AudioProcessorEditor)
 };

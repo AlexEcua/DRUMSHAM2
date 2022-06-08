@@ -26,6 +26,9 @@ DRUMSHAM_2AudioProcessorEditor::DRUMSHAM_2AudioProcessorEditor (DRUMSHAM_2AudioP
     pattern.addItem("Pattern 2", 2);
     pattern.addItem("Pattern 3", 3);
 
+    addAndMakeVisible(stopButton);
+    addAndMakeVisible(gainSlider);
+
     setSize (400, 500);
 }
 
@@ -42,6 +45,9 @@ void DRUMSHAM_2AudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour (juce::Colours::white);
     g.setFont (20.0f);
     g.drawFittedText ("Welcome to DRUMSHAM!", getLocalBounds(), juce::Justification::centredTop, 1);
+
+
+
 }
 
 void DRUMSHAM_2AudioProcessorEditor::resized()
@@ -51,4 +57,7 @@ void DRUMSHAM_2AudioProcessorEditor::resized()
    
     styleMenu .setBounds (10, 45, getWidth() - 20, 30);
     pattern .setBounds (10, 90, getWidth() - 20, 30);
+
+    stopButton.setBounds(90, 170, getWidth() - 170, 30);
+    gainSlider.setBounds(90, 240, getWidth() - 170, 20);
 }

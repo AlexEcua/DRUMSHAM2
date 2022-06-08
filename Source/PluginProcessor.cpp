@@ -155,6 +155,8 @@ void DRUMSHAM_2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         auto* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
+       
+      
     }
 }
 
