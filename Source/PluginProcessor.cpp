@@ -19,7 +19,7 @@ DRUMSHAM_2AudioProcessor::DRUMSHAM_2AudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), parameters(*this, nullptr, "PARAMETERS", initializeGUI())
 #endif
 {
 }
@@ -28,6 +28,18 @@ DRUMSHAM_2AudioProcessor::~DRUMSHAM_2AudioProcessor()
 {
 }
 
+juce::AudioProcessorValueTreeState::ParameterLayout DRUMSHAM_2AudioProcessor::initializeGUI()
+{
+    std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("COMBO_ID", "COMBO_NAME", juce::StringArray("Hip-Hop", "Reggaeton"), 0));
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("COMBO2_ID", "COMBO2_NAME", juce::StringArray("Pattern 1", "Pattern 2", "Pattern 3"), 0));
+
+
+    return { params.begin(), params.end() };
+
+}
 //==============================================================================
 const juce::String DRUMSHAM_2AudioProcessor::getName() const
 {
@@ -155,11 +167,28 @@ void DRUMSHAM_2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         auto* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
-       
-      
+        switch((int)*parameters.getRawParameterValue("COMBO_ID"))
+        {
+            case 0:
+                DBG("Hip-Hop");
+                break;
+            case 1:
+                DBG("Reggaeton");
+                break;
+       }
+        switch ((int)*parameters.getRawParameterValue("COMBO2_ID"))
+        {
+        case 0:
+            DBG("Pattern 1");
+            break;
+        case 1:
+            DBG("Pattern 2");
+            break;
+        case 2:
+            DBG("Pattern 3");
+        }        break;
     }
 }
-
 //==============================================================================
 bool DRUMSHAM_2AudioProcessor::hasEditor() const
 {
@@ -184,6 +213,9 @@ void DRUMSHAM_2AudioProcessor::setStateInformation (const void* data, int sizeIn
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 }
+
+
+
 
 //==============================================================================
 // This creates new instances of the plugin..

@@ -15,18 +15,8 @@ DRUMSHAM_2AudioProcessorEditor::DRUMSHAM_2AudioProcessorEditor (DRUMSHAM_2AudioP
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    addAndMakeVisible(styleMenu);
-    styleMenu.setText("Select Genre:");
-    styleMenu.addItem("Hip-hop", 1);
-    styleMenu.addItem("Reggaeton", 2);
+    createGUI();
 
-    addAndMakeVisible(pattern);
-    pattern.setText("Choose Pattern:");
-    pattern.addItem("Pattern 1", 1);
-    pattern.addItem("Pattern 2", 2);
-    pattern.addItem("Pattern 3", 3);
-
-    addAndMakeVisible(stopButton);
     addAndMakeVisible(gainSlider);
 
     setSize (400, 500);
@@ -54,10 +44,31 @@ void DRUMSHAM_2AudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-   
-    styleMenu .setBounds (10, 45, getWidth() - 20, 30);
-    pattern .setBounds (10, 90, getWidth() - 20, 30);
 
-    stopButton.setBounds(90, 170, getWidth() - 170, 30);
+   
     gainSlider.setBounds(90, 240, getWidth() - 170, 20);
+}
+void DRUMSHAM_2AudioProcessorEditor::createGUI()
+{
+    addAndMakeVisible(menu);
+    menu.setText("Select Genre:");
+    menu.addItem("Hip-Hop", 1);
+    menu.addItem("Reggaeton", 2);
+    menu.setJustificationType(juce::Justification::centred);
+    menu.setBounds(80, getWidth()+60, 250, 25);
+    
+
+    miComboBoxAttachment = std::make_unique < juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.parameters, "COMBO_ID", menu);
+
+    addAndMakeVisible(pattern);
+    pattern.setText("Choose Pattern:");
+    pattern.addItem("Pattern 1", 1);
+    pattern.addItem("Pattern 2", 2);
+    pattern.addItem("Pattern 3", 3);
+    pattern.setJustificationType(juce::Justification::centred);
+    pattern.setBounds(80, getWidth() + 110, 250, 25);
+
+    elComboBoxAttachment = std::make_unique < juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.parameters, "COMBO2_ID", pattern);
+
+
 }
