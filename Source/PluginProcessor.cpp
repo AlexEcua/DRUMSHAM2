@@ -26,8 +26,8 @@ DRUMSHAM_2AudioProcessor::DRUMSHAM_2AudioProcessor()
 
 DRUMSHAM_2AudioProcessor::~DRUMSHAM_2AudioProcessor()
 {
-}
 
+}
 juce::AudioProcessorValueTreeState::ParameterLayout DRUMSHAM_2AudioProcessor::initializeGUI()
 {
     std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
@@ -40,6 +40,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DRUMSHAM_2AudioProcessor::in
     return { params.begin(), params.end() };
 
 }
+
 //==============================================================================
 const juce::String DRUMSHAM_2AudioProcessor::getName() const
 {
@@ -167,15 +168,15 @@ void DRUMSHAM_2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         auto* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
-        switch((int)*parameters.getRawParameterValue("COMBO_ID"))
+        switch ((int)*parameters.getRawParameterValue("COMBO_ID"))
         {
-            case 0:
-                DBG("Hip-Hop");
-                break;
-            case 1:
-                DBG("Reggaeton");
-                break;
-       }
+        case 0:
+            DBG("Hip-Hop");
+            break;
+        case 1:
+            DBG("Reggaeton");
+            break;
+        }
         switch ((int)*parameters.getRawParameterValue("COMBO2_ID"))
         {
         case 0:
@@ -187,6 +188,7 @@ void DRUMSHAM_2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
         case 2:
             DBG("Pattern 3");
         }        break;
+
     }
 }
 //==============================================================================

@@ -23,22 +23,23 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    
     void createGUI();
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
 
+
     juce::ComboBox menu{ "Select Genre:" };
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> miComboBoxAttachment;
 
-
+    juce::ComboBox pattern{ "Choose Pattern" };
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> elComboBoxAttachment;
     juce::Slider gainSlider;
 
-    juce::ComboBox pattern{ "Choose Pattern:" };
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> elComboBoxAttachment;
-    
+    juce::TextButton button1{"Export MIDI Master Audio"};
+    juce::TextButton button2{ "Export Master Audio" };
+
     DRUMSHAM_2AudioProcessor& audioProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DRUMSHAM_2AudioProcessorEditor)
