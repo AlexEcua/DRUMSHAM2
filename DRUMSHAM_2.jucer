@@ -3,7 +3,12 @@
 <JUCERPROJECT id="mWhhAX" name="DRUMSHAM_2" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
   <MAINGROUP id="uXs6OD" name="DRUMSHAM_2">
+    <GROUP id="{C188D019-07C6-51A2-7BFA-6BA9149EFCAC}" name="Parameters">
+      <FILE id="pKkrxl" name="GainSlider.h" compile="0" resource="0" file="Source/GainSlider.h"/>
+      <FILE id="A2bNoV" name="GainSlider.cpp" compile="1" resource="0" file="Source/GainSlider.cpp"/>
+    </GROUP>
     <GROUP id="{2888E940-847A-BF85-FD27-2A87F2845A1A}" name="Source">
+      <FILE id="cmQOid" name="FileManager.cpp" compile="1" resource="0" file="Source/FileManager.cpp"/>
       <FILE id="iY5frs" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="tB9wkh" name="PluginProcessor.h" compile="0" resource="0"

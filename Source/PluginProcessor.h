@@ -54,11 +54,24 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    void loadFile(juce::File myFile);
+    void playFile();
+
     juce::AudioProcessorValueTreeState parameters;
     juce::AudioProcessorValueTreeState::ParameterLayout initializeGUI();
 
+    juce::AudioFormatManager audioFormatManager;
+    juce::File audioFile;
+
+    juce::AudioTransportSource transportSource;
+    std::unique_ptr<juce::AudioFormatReaderSource> audioFileSource;
+    bool isPlaying = false;
+
+    
+
 
 private:
-    //==============================================================================
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DRUMSHAM_2AudioProcessor)
 };

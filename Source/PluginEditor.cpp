@@ -10,16 +10,42 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-DRUMSHAM_2AudioProcessorEditor::DRUMSHAM_2AudioProcessorEditor (DRUMSHAM_2AudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+DRUMSHAM_2AudioProcessorEditor::DRUMSHAM_2AudioProcessorEditor (DRUMSHAM_2AudioProcessor& p, juce::AudioProcessorValueTreeState& apvts)
+    : AudioProcessorEditor (&p), audioProcessor (p), parameters(apvts)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
     
     createGUI();
-    addAndMakeVisible(gainSlider);
     addAndMakeVisible(button1);
     addAndMakeVisible(button2);
+    updatePath();
+    audioProcessor.loadFile(mainDirectory);
+
+    gainSlider = std::make_unique<GainSlider>(parameters);
+    addAndMakeVisible(gainSlider.get());
+
+
+    menu.onChange = [&]()
+    {
+        int comboBoxID = menu.getSelectedId();
+        DBG(comboBoxID);
+        genreString = FileManager::getPathGenre(comboBoxID);
+        updatePath();
+        audioProcessor.loadFile(mainDirectory);
+        audioProcessor.playFile();
+
+
+    };
+
+    pattern.onChange = [&]()
+    {
+        int comboBoxID = pattern.getSelectedId();
+        DBG(comboBoxID);
+        patternString = FileManager::getFileNameMP3(comboBoxID);
+        updatePath();
+        audioProcessor.loadFile(mainDirectory);
+        audioProcessor.playFile();
+    };
+
 
     setSize (400, 400);
 }
@@ -51,7 +77,9 @@ void DRUMSHAM_2AudioProcessorEditor::resized()
     button1.setBounds(210, 300, getWidth() - 250, 30);
     button2.setBounds(40, 300, getWidth() - 250, 30);
 
-    gainSlider.setBounds(90, 240, getWidth() - 170, 20);
+    gainSlider->setBoundsRelative(0.0f, 0.6f, 0.8f, 0.2f);
+
+   
 }
 
 void DRUMSHAM_2AudioProcessorEditor::createGUI()
@@ -78,3 +106,9 @@ void DRUMSHAM_2AudioProcessorEditor::createGUI()
 
 
 }
+
+void DRUMSHAM_2AudioProcessorEditor::updatePath()
+{
+    mainDirectory = FileManager::getApplicationDataDirectory().getChildFile(genreString).getChildFile(patternString);
+}
+

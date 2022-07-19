@@ -22,6 +22,7 @@ DRUMSHAM_2AudioProcessor::DRUMSHAM_2AudioProcessor()
                        ), parameters(*this, nullptr, "PARAMETERS", initializeGUI())
 #endif
 {
+    audioFormatManager.registerBasicFormats();
 }
 
 DRUMSHAM_2AudioProcessor::~DRUMSHAM_2AudioProcessor()
@@ -36,6 +37,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout DRUMSHAM_2AudioProcessor::in
 
     params.push_back(std::make_unique<juce::AudioParameterChoice>("COMBO2_ID", "COMBO2_NAME", juce::StringArray("Pattern 1", "Pattern 2", "Pattern 3"), 0));
 
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("gain",
+        "Gain",
+        juce::NormalisableRange<float>(0.1f, 10.0f, 0.01f),
+        1.0f));
 
     return { params.begin(), params.end() };
 
@@ -104,16 +109,20 @@ void DRUMSHAM_2AudioProcessor::changeProgramName (int index, const juce::String&
 }
 
 //==============================================================================
-void DRUMSHAM_2AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void DRUMSHAM_2AudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    transportSource.prepareToPlay(samplesPerBlock, sampleRate);
+
+
 }
 
 void DRUMSHAM_2AudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
+    transportSource.releaseResources();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -148,48 +157,32 @@ void DRUMSHAM_2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
+   
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    if (isPlaying == true)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-        switch ((int)*parameters.getRawParameterValue("COMBO_ID"))
+        DBG("Is Playing");
+        if (audioFileSource != nullptr)
         {
-        case 0:
-            DBG("Hip-Hop");
-            break;
-        case 1:
-            DBG("Reggaeton");
-            break;
+            DBG("Audio File Source");
+            transportSource.start();
         }
-        switch ((int)*parameters.getRawParameterValue("COMBO2_ID"))
-        {
-        case 0:
-            DBG("Pattern 1");
-            break;
-        case 1:
-            DBG("Pattern 2");
-            break;
-        case 2:
-            DBG("Pattern 3");
-        }        break;
-
+        isPlaying = false;
     }
+    /*else
+    {
+        transportSource.stop();
+        transportSource.setPosition(0.0);
+    }*/
+
+
+    transportSource.getNextAudioBlock(juce::AudioSourceChannelInfo(buffer));
+
+    transportSource.setGain(parameters.getRawParameterValue("gain")->load());
+
+
 }
 //==============================================================================
 bool DRUMSHAM_2AudioProcessor::hasEditor() const
@@ -199,7 +192,7 @@ bool DRUMSHAM_2AudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* DRUMSHAM_2AudioProcessor::createEditor()
 {
-    return new DRUMSHAM_2AudioProcessorEditor (*this);
+    return new DRUMSHAM_2AudioProcessorEditor (*this,parameters);
 }
 
 //==============================================================================
@@ -225,3 +218,29 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new DRUMSHAM_2AudioProcessor();
 }
+
+void DRUMSHAM_2AudioProcessor::loadFile(juce::File myFile)
+{
+    transportSource.stop();
+    //transportSource.setPosition(0.0);
+    transportSource.setSource(nullptr);
+    audioFileSource = nullptr;
+
+   
+    DBG("Path Name" << myFile.getFullPathName());
+
+    juce::AudioFormatReader* reader = audioFormatManager.createReaderFor(myFile);
+
+    if (reader != nullptr)
+    {
+        DBG("READER");
+        audioFileSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);
+        transportSource.setSource(audioFileSource.get());
+    }
+
+}
+void DRUMSHAM_2AudioProcessor::playFile()
+{
+    isPlaying = true;
+}
+

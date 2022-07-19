@@ -10,6 +10,9 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "FileManager.cpp"
+#include "GainSlider.h"
+
 
 //==============================================================================
 /**
@@ -17,13 +20,15 @@
 class DRUMSHAM_2AudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    DRUMSHAM_2AudioProcessorEditor (DRUMSHAM_2AudioProcessor&);
+    DRUMSHAM_2AudioProcessorEditor (DRUMSHAM_2AudioProcessor&, juce::AudioProcessorValueTreeState&);
     ~DRUMSHAM_2AudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
     void createGUI();
+
+    juce::AudioProcessorValueTreeState& parameters;
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -35,10 +40,21 @@ private:
 
     juce::ComboBox pattern{ "Choose Pattern" };
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> elComboBoxAttachment;
-    juce::Slider gainSlider;
+    
 
     juce::TextButton button1{"Export MIDI Master Audio"};
     juce::TextButton button2{ "Export Master Audio" };
+
+    juce::File mainDirectory;
+    juce::String genreString = "HIP-HOP";
+    juce::String patternString = "Audio1";
+
+    void updatePath();
+    
+    std::unique_ptr<GainSlider> gainSlider{ nullptr };
+    
+    
+
 
     DRUMSHAM_2AudioProcessor& audioProcessor;
 
